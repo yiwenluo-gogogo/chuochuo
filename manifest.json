@@ -3,14 +3,16 @@
   "name": "It's Your Turn Today Extension",
   "version": "0.1",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "socket.io.min.js",
+      "background.js"]
   },
   "content_scripts": [
     {
       "matches": [
         "https://www.youtube.com/*"
       ],
-      "js": ["jquery-3.6.0.js", "content.js"]
+      "js": ["jquery-3.6.0.js", "socket.io.min.js", "content.js"]
     }
   ],
   "browser_action": {
