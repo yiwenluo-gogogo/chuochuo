@@ -1,27 +1,136 @@
- // const socket = io("http://63.145.59.226:8080");
+let nodes = [];
+let recieved = false;
+let recievedEvent;
+let loading = false;
 
- const socket = io('http://63.145.59.226:8080', {
-     transports: ['polling', 'flashsocket']
+
+init();
+
+const observer = new MutationObserver(() => {
+  init();
 });
 
- //socket
-socket.on("connect", () => {
-  console.log(socket.id); // x8WIv7-mJelg7on_ALbx
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
 });
 
-socket.on("disconnect", () => {
-  console.log(socket.id); // undefined
-});      
 
- chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if( request.message === "clicked_browser_action" ) {
-      var firstHref = $("a[href^='http']").eq(0).attr("href");
-      console.log(firstHref);
-      console.log("Start the extension.");
+function init() {
+  const nodesCollection = document.getElementsByTagName('video');
+  addListeners(nodesCollection);
+  nodes = Array.from(nodesCollection);
+}
 
-
-
+function addListeners(nodesCollection) {
+  const eventTypes = ['playing', 'pause', 'seeked', 'ratechange', 'progress'];
+  for (let i = 0; i < nodesCollection.length; i++) {
+    for (let j = 0; j < eventTypes.length; j++) {
+      nodesCollection[i].addEventListener(eventTypes[j], onEvent, true);
     }
   }
-);
+}
+
+function onEvent(event) {
+  //  if (event.type === 'progress') console.log('event:'+event.type+' '+event.target.readyState+' recieved: '+recieved+' loading: '+loading);
+  //  else console.log('event:'+event.type+' '+' recieved: '+recieved+' loading: '+loading);
+  if (recieved) {
+    if (recievedEvent === 'play') {
+      if (event.type === 'progress') {
+        recieved = false;
+      } else if (event.type === 'playing') recieved = false;
+    } else if (recievedEvent === 'pause') {
+      if (event.type === 'seeked') recieved = false;
+    } else if (recievedEvent === event.type) recieved = false;
+  } else if (event.type === 'seeked') {
+    if (event.target.paused) broadcast(event);
+  } else broadcast(event);
+}
+
+function broadcast(event) {
+  const eventSend = {
+    location: iframeFullIndex(window),
+    type: event.type,
+    element: nodes.indexOf(event.target),
+    currentTime: event.target.currentTime,
+    playbackRate: event.target.playbackRate,
+  };
+  if (eventSend.type === 'progress') eventSend.type = 'pause';
+  else if (eventSend.type === 'playing') eventSend.type = 'play';
+  sendMessageInRuntime({
+    from: 'content',
+    data: eventSend,
+  });
+  console.log("broadcast: " +  eventSend.type);
+}
+
+function sendMessageInRuntime(msg) {
+  try {
+    chrome.runtime.sendMessage(msg);
+  } catch (err) {
+    console.log("Err in sendMessageInRuntime: " + err)
+    throw new Error(err);
+  }
+}
+
+function iframeFullIndex(win) {
+  // eslint-disable-next-line no-param-reassign
+  win = win || window;
+  if (iframeIndex(win) < 0) {
+    return '-1';
+  }
+  return `${iframeFullIndex(win.parent)}${iframeIndex(win)}`;
+}
+
+function iframeIndex(win) {
+  // eslint-disable-next-line no-param-reassign
+  win = win || window;
+  if (win.parent !== win) {
+    for (let i = 0; i < win.parent.frames.length; i++) {
+      if (win.parent.frames[i] === win) {
+        return i;
+      }
+    }
+    throw Error('In a frame, but could not find myself');
+  } else {
+    return -1;
+  }
+}
+
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  console.log("in content")
+  if (msg.from === 'background') {
+      // fireEvent(msg.data);
+      console.log("received:" + msg.data);
+      sendResponse(false);
+    
+  }
+});
+
+
+// function fireEvent(event) {
+//   recieved = true;
+//   recievedEvent = event.type;
+
+//   switch (event.type) {
+//     case 'play': {
+//       nodes[event.element].currentTime = event.currentTime;
+//       nodes[event.element].play().catch(errorOnEvent);
+//       break;
+//     }
+//     case 'pause': {
+//       nodes[event.element].pause();
+//       nodes[event.element].currentTime = event.currentTime;
+//       break;
+//     }
+//     case 'seeked': {
+//       nodes[event.element].currentTime = event.currentTime;
+//       break;
+//     }
+//     case 'ratechange': {
+//       nodes[event.element].playbackRate = event.playbackRate;
+//       break;
+//     }
+//   }
+// }
