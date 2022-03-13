@@ -23,7 +23,7 @@ function init() {
 }
 
 function addListeners(nodesCollection) {
-  const eventTypes = ['playing', 'pause', 'seeked', 'ratechange', 'progress'];
+  const eventTypes = ['playing', 'pause', 'jump'];
   for (let i = 0; i < nodesCollection.length; i++) {
     for (let j = 0; j < eventTypes.length; j++) {
       nodesCollection[i].addEventListener(eventTypes[j], onEvent, true);
@@ -32,17 +32,17 @@ function addListeners(nodesCollection) {
 }
 
 function onEvent(event) {
-  //  if (event.type === 'progress') console.log('event:'+event.type+' '+event.target.readyState+' recieved: '+recieved+' loading: '+loading);
-  //  else console.log('event:'+event.type+' '+' recieved: '+recieved+' loading: '+loading);
+  console.log("On event " + event.type);
   if (recieved) {
+    console.log("received")
     if (recievedEvent === 'play') {
       if (event.type === 'progress') {
         recieved = false;
       } else if (event.type === 'playing') recieved = false;
     } else if (recievedEvent === 'pause') {
-      if (event.type === 'seeked') recieved = false;
+      if (event.type === 'jump') recieved = false;
     } else if (recievedEvent === event.type) recieved = false;
-  } else if (event.type === 'seeked') {
+  } else if (event.type === 'jump') {
     if (event.target.paused) broadcast(event);
   } else broadcast(event);
 }
@@ -101,7 +101,7 @@ function iframeIndex(win) {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   console.log("in content")
   if (msg.from === 'background') {
-      // fireEvent(msg.data);
+      fireEvent(msg.data);
       console.log("received:" + msg.data);
       sendResponse(false);
     
@@ -109,28 +109,32 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 
-// function fireEvent(event) {
-//   recieved = true;
-//   recievedEvent = event.type;
+function fireEvent(event) {
+  recieved = true;
+  recievedEvent = event.type;
 
-//   switch (event.type) {
-//     case 'play': {
-//       nodes[event.element].currentTime = event.currentTime;
-//       nodes[event.element].play().catch(errorOnEvent);
-//       break;
-//     }
-//     case 'pause': {
-//       nodes[event.element].pause();
-//       nodes[event.element].currentTime = event.currentTime;
-//       break;
-//     }
-//     case 'seeked': {
-//       nodes[event.element].currentTime = event.currentTime;
-//       break;
-//     }
-//     case 'ratechange': {
-//       nodes[event.element].playbackRate = event.playbackRate;
-//       break;
-//     }
-//   }
-// }
+  switch (event.type) {
+    case 'play': {
+      nodes[event.element].currentTime = event.currentTime;
+      nodes[event.element].play().catch(errorOnEvent);
+      break;
+    }
+    case 'pause': {
+      nodes[event.element].pause();
+      nodes[event.element].currentTime = event.currentTime;
+      break;
+    }
+    case 'jump': {
+      nodes[event.element].currentTime = event.currentTime;
+      break;
+    }
+  }
+}
+
+function errorOnEvent(err) {
+  if (err.name === 'NotAllowedError') {
+    sendMessageInRuntime({
+      from: 'errorOnEvent',
+    });
+  }
+}
