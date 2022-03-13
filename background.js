@@ -20,7 +20,9 @@ function initSockets(tab) {
   websocket = new WebSocket("ws://67.148.60.222:8765/");
   // websocket.send(JSON.stringify({ action: "abc" }));
 
-  websocket.onmessage = ({ event }) => {
+  websocket.onmessage = ({ data }) => {
+    event = JSON.parse(data);
+
     chrome.tabs.sendMessage(tab.id, {
       from: 'background',
       data: event,

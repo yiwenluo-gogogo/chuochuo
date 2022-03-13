@@ -23,7 +23,7 @@ function init() {
 }
 
 function addListeners(nodesCollection) {
-  const eventTypes = ['playing', 'pause', 'jump'];
+  const eventTypes = ['playing', 'pause', 'seeked', 'progress'];
   for (let i = 0; i < nodesCollection.length; i++) {
     for (let j = 0; j < eventTypes.length; j++) {
       nodesCollection[i].addEventListener(eventTypes[j], onEvent, true);
@@ -33,21 +33,39 @@ function addListeners(nodesCollection) {
 
 function onEvent(event) {
   console.log("On event " + event.type);
+  console.log("received " + recieved);
+  console.log("receivedEvent " + recievedEvent);
+  console.log("event.type" + event.type)
+  console.log("event.target" + event.target)
+
+  // broadcast(event);
   if (recieved) {
-    console.log("received")
     if (recievedEvent === 'play') {
       if (event.type === 'progress') {
+        onProgress(event);
         recieved = false;
       } else if (event.type === 'playing') recieved = false;
     } else if (recievedEvent === 'pause') {
-      if (event.type === 'jump') recieved = false;
+      if (event.type === 'seeked') recieved = false;
     } else if (recievedEvent === event.type) recieved = false;
-  } else if (event.type === 'jump') {
+  } else if (event.type === 'seeked') {
     if (event.target.paused) broadcast(event);
+  } else if (event.type === 'progress') {
+    onProgress(event);
   } else broadcast(event);
 }
 
+function onProgress(event) {
+  const prevLoading = loading;
+  if (event.target.readyState < 3) loading = true;
+  else loading = false;
+  if (prevLoading === false && loading === true) {
+    broadcast(event);
+  }
+}
+
 function broadcast(event) {
+  console.log("broadcast in content");
   const eventSend = {
     location: iframeFullIndex(window),
     type: event.type,
@@ -124,7 +142,7 @@ function fireEvent(event) {
       nodes[event.element].currentTime = event.currentTime;
       break;
     }
-    case 'jump': {
+    case 'seeked': {
       nodes[event.element].currentTime = event.currentTime;
       break;
     }
