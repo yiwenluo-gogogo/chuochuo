@@ -44,18 +44,8 @@ async def counter(websocket):
         # Manage state changes
         async for message in websocket:
             event = json.loads(message)
-            if event["action"] == "pause":
-                websockets.broadcast(USERS, pause_event())
-            elif event["action"] == "play":
-                websockets.broadcast(USERS, play_event())
-            elif event["action"] == "jump":
-                websockets.broadcast(USERS, jump_event(event["timestamp"]))
-                TIMESTAMP = int(event["timestamp"])
-            elif event["action"] == "rewind":
-                TIMESTAMP -= 30
-                websockets.broadcast(USERS, rewind_event(TIMESTAMP))
-            else:
-                logging.error("unsupported event: %s", event)
+            print(message)
+            websockets.broadcast(USERS, message)
     finally:
         # Unregister user
         USERS.remove(websocket)
