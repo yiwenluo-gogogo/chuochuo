@@ -1,2 +1,2 @@
 #!/bin/bash
-/var/server/SyncServer/server 
+/var/server/SyncServer/server & 
