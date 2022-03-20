@@ -1,2 +1,2 @@
 #!/bin/bash
-$(PWD)/../server 
+/var/server/SyncServer/server 
