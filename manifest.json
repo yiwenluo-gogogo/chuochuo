@@ -1,23 +1,47 @@
 {
-  "manifest_version": 3,
-  "name": "It's Your Turn Today Extension",
-  "version": "0.1",
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
+    "manifest_version": 3,
+    "name": "Kitchener to Sunnyvale",
+    "version": "0.1",
+    "background":
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": ["content.js"]
-      // "js": ["jquery-3.6.0.js", "socket.io.min.js", "content.js"]
-    }
-  ],
-  "action": {
-    "default_icon": "icon.png"
-  },
-  "permissions": [
-    "contextMenus"
-   ]
+        "service_worker": "background.js"
+    },
+    "content_scripts":
+    [
+        {
+            "matches":
+            [
+                "<all_urls>"
+            ],
+            "js":
+            [
+                "content.js"
+            ]
+        }
+    ],
+    "action":
+    {
+        "default_icon":
+        {
+            "16": "/images/get_started16.png",
+            "32": "/images/get_started32.png",
+            "48": "/images/get_started48.png",
+            "128": "/images/get_started128.png"
+        },
+        "default_popup": "popup.html"
+    },
+    "icons":
+    {
+        "16": "/images/get_started16.png",
+        "32": "/images/get_started32.png",
+        "48": "/images/get_started48.png",
+        "128": "/images/get_started128.png"
+    },
+    "permissions":
+    [
+        "storage",
+        "contextMenus",
+        "activeTab", 
+        "scripting"
+    ]
 }
