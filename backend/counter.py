@@ -39,7 +39,7 @@ async def counter(websocket):
     try:
         # Register user
         USERS.add(websocket)
-        websockets.broadcast(USERS, users_event())
+        # websockets.broadcast(USERS, users_event())
         # Send current state to user
         # Manage state changes
         async for message in websocket:
