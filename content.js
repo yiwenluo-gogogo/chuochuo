@@ -122,7 +122,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       fireEvent(msg.data);
       console.log("received:" + msg.data);
       sendResponse(false);
-    
   }
 });
 
