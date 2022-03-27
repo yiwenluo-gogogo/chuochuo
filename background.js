@@ -1,13 +1,14 @@
 var msg = "abc";
 let status = "disconnect";
 let websocket = null;
+var SERVER_ADDRESS = "ws://3.129.19.116:8765/sync"
 
 
 function StartWatchParty() {
   chrome.alarms.create("ws health check", {delayInMinutes: 1, periodInMinutes: 1})
 
   console.log("Init sockets.");
-  websocket = new WebSocket("ws://67.148.60.222:8765/");
+  websocket = new WebSocket(SERVER_ADDRESS);
   chrome.notifications.create('NOTFICATION_ID', {
       type: 'basic',
       iconUrl: 'images/zelda32.png',
@@ -52,7 +53,7 @@ function checkWebSocket(alarm) {
       websocket.send("I am alive!");
       console.log("I am alive!");
     } catch (err) {
-      websocket = new WebSocket("ws://67.148.60.222:8765/");
+      websocket = new WebSocket(SERVER_ADDRESS);
     }
   }
 }
@@ -63,6 +64,6 @@ function broadcast(event, senderTab) {
     websocket.send(JSON.stringify(event));
   } catch (err) {
     console.log("reconnecting!");
-    websocket = new WebSocket("ws://67.148.60.222:8765/");
+    websocket = new WebSocket(SERVER_ADDRESS);
   }
 }
