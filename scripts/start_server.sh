@@ -1,4 +1,2 @@
 #!/bin/bash
-nohup /var/server/SyncServer/K2S_Server & 
-echo ABC
-exit 0
+nohup /var/server/SyncServer/K2S_Server > /dev/null 2> /dev/null < /dev/null & 
