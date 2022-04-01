@@ -2,6 +2,7 @@ var msg = "abc";
 let status = "disconnect";
 let websocket = null;
 var SERVER_ADDRESS = "ws://3.129.19.116:8765/sync"
+// var SERVER_ADDRESS = "ws://localhost:8765/sync"
 
 
 function StartWatchParty() {
