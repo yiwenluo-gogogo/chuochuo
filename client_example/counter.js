@@ -1,23 +1,31 @@
+// var SERVER_ADDRESS = "ws://3.129.19.116:8765/sync"
+var SERVER_ADDRESS = "ws://63.145.59.226:8765/"
+
 window.addEventListener("DOMContentLoaded", () => {
-  const websocket = new WebSocket("ws://63.145.59.226:8765/");
-  console.log("websocket connected")
-  document.querySelector(".pause").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ type: "pause", action: "pause" }));
-  });
+  const websocket = new WebSocket(SERVER_ADDRESS);
+  console.log(websocket);
 
-  document.querySelector(".play").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ type: "play", action: "play" }));
-  });
+  // document.querySelector(".pause").addEventListener("click", () => {
+  //   websocket.send(JSON.stringify({ action: "pause" }));
+  // });
 
-  document.querySelector(".jump").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ type: "jump", action: "jump", timestamp: document.querySelector('.ts').value }));
-  });
-  document.querySelector(".rewind").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ type: "rewind", action: "rewind", time: 30 }));
-  });
+  // document.querySelector(".play").addEventListener("click", () => {
+  //   websocket.send(JSON.stringify({ action: "play" }));
+  // });
+
+  // document.querySelector(".jump").addEventListener("click", () => {
+  //   websocket.send(JSON.stringify({ action: "jump", timestamp: document.querySelector('.ts').value }));
+  // });
+  // document.querySelector(".rewind").addEventListener("click", () => {
+  //   websocket.send(JSON.stringify({ action: "rewind", time: 30 }));
+  // });
 
   websocket.onmessage = ({ data }) => {
+    console.log("data");
+    console.log(data);
     const event = JSON.parse(data);
+    console.log(event);
+    console.log(event.type);
     switch (event.type) {
       case "jump":
         document.querySelector(".value").textContent = event.value;
