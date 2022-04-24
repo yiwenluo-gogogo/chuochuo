@@ -30,6 +30,8 @@
         "activeTab", 
         "scripting",
         "alarms",
-        "notifications"
+        "notifications",
+        "identity",
+        "identity.email"
     ]
 }

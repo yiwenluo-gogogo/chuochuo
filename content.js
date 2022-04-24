@@ -119,6 +119,7 @@ function iframeIndex(win) {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   console.log("in content")
   if (msg.from === 'background') {
+      user_email = 
       fireEvent(msg.data);
       console.log("received:" + msg.data);
       sendResponse(false);
