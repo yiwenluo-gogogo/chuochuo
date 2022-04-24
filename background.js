@@ -54,7 +54,9 @@ function checkWebSocket(alarm) {
       websocket.send("I am alive!");
       console.log("I am alive!");
     } catch (err) {
+      console.log("reconnecting!");
       websocket = new WebSocket(SERVER_ADDRESS);
+      console.log("web socket connected")
     }
   }
 }
