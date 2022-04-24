@@ -8,7 +8,7 @@ import websockets
 logging.basicConfig()
 
 USERS = set()
-
+USERS_EMAIL = {}
 VALUE = 0
 TIMESTAMP = 0
 def pause_event():
@@ -29,7 +29,7 @@ def load_event(video_id):
 
 
 def users_event():
-    return json.dumps({"type": "users", "count": len(USERS)})
+    return json.dumps({"type": "users", "count": len(USERS), "user_list": " ".join(list(USERS_EMAIL.values()))})
 
 # def value_event():
 #     return json.dumps({"type": "value", "value": VALUE})
@@ -40,15 +40,19 @@ async def counter(websocket):
         # Register user
         USERS.add(websocket)
         websockets.broadcast(USERS, users_event())
+        
         # Send current state to user
         # Manage state changes
         async for message in websocket:
             event = json.loads(message)
-            print(message)
+            print(event)
+            USERS_EMAIL[websocket.id] = event['user_email']
             websockets.broadcast(USERS, message)
+            websockets.broadcast(USERS, users_event())
     finally:
         # Unregister user
         USERS.remove(websocket)
+        USERS_EMAIL.pop(websocket.id, None)
         websockets.broadcast(USERS, users_event())
 
 async def main():
