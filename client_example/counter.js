@@ -1,19 +1,19 @@
 window.addEventListener("DOMContentLoaded", () => {
   const websocket = new WebSocket("ws://63.145.59.226:8765/");
-
+  console.log("websocket connected")
   document.querySelector(".pause").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ action: "pause" }));
+    websocket.send(JSON.stringify({ type: "pause", action: "pause" }));
   });
 
   document.querySelector(".play").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ action: "play" }));
+    websocket.send(JSON.stringify({ type: "play", action: "play" }));
   });
 
   document.querySelector(".jump").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ action: "jump", timestamp: document.querySelector('.ts').value }));
+    websocket.send(JSON.stringify({ type: "jump", action: "jump", timestamp: document.querySelector('.ts').value }));
   });
   document.querySelector(".rewind").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ action: "rewind", time: 30 }));
+    websocket.send(JSON.stringify({ type: "rewind", action: "rewind", time: 30 }));
   });
 
   websocket.onmessage = ({ data }) => {
