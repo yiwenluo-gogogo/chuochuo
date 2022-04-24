@@ -6,11 +6,11 @@ window.addEventListener("DOMContentLoaded", () => {
   console.log(websocket);
 
   document.querySelector(".pause").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ type: "pause", action: "pause", user_email: "abc@gmail.com" }));
+    websocket.send(JSON.stringify({ type: "pause", action: "pause", userEmail: "yiwen@gmail.com" }));
   });
 
   document.querySelector(".play").addEventListener("click", () => {
-    websocket.send(JSON.stringify({ type: "play", action: "play", user_email: "abc@gmail.com" }));
+    websocket.send(JSON.stringify({ type: "play", action: "play", userEmail: "yiwen@gmail.com" }));
   });
 
   websocket.onmessage = ({ data }) => {
@@ -27,10 +27,10 @@ window.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".value").textContent = event.value;
         break;
       case "play":
-        document.querySelector(".log").textContent = `${event.user_email}` + " played video"
+        document.querySelector(".log").textContent = `${event.userEmail}` + " played video"
         break;
       case "pause":
-        document.querySelector(".log").textContent = `${event.user_email}` + " paused video"
+        document.querySelector(".log").textContent = `${event.userEmail}` + " paused video"
         break;
       case "users":
         const users = `${event.count} user${event.count == 1 ? "" : "s"}`;
