@@ -11,48 +11,31 @@ USERS = set()
 USERS_EMAIL = {}
 VALUE = 0
 TIMESTAMP = 0
-def pause_event():
-    return json.dumps({"type": "pause", "value": 0})
-
-def play_event():
-    return json.dumps({"type": "play", "value": 0})
-
-def jump_event(timestamp):
-    return json.dumps({"type": "jump", "value": timestamp})
-
-def rewind_event(seconds):
-    return json.dumps({"type": "rewind", "value": seconds})
-
-def load_event(video_id):
-    return json.dumps({"type": "load", "value": video_id})
-
-
 
 def users_event():
     return json.dumps({"type": "users", "count": len(USERS), "user_list": " ".join(list(USERS_EMAIL.values()))})
-
-# def value_event():
-#     return json.dumps({"type": "value", "value": VALUE})
 
 async def counter(websocket):
     global USERS, TIMESTAMP
     try:
         # Register user
         USERS.add(websocket)
+        # Broadcast user event to all users
         websockets.broadcast(USERS, users_event())
         
-        # Send current state to user
-        # Manage state changes
+        # When new message came, broad event to all users
+        # TODO: update to broad event to all users except sender
         async for message in websocket:
             event = json.loads(message)
-            print(event)
-            USERS_EMAIL[websocket.id] = event['user_email']
             websockets.broadcast(USERS, message)
+            # send log to all users 
             websockets.broadcast(USERS, users_event())
+            USERS_EMAIL[websocket.id] = event['userEmail']
     finally:
-        # Unregister user
+        # When user lost connection
         USERS.remove(websocket)
         USERS_EMAIL.pop(websocket.id, None)
+        # send log to all users
         websockets.broadcast(USERS, users_event())
 
 async def main():
