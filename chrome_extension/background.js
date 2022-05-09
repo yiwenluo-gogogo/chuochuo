@@ -3,14 +3,14 @@ let status = "disconnect";
 let websocket = null;
 var SERVER_ADDRESS = "ws://3.129.19.116:8765/sync"
 var user_email = "";
-// var SERVER_ADDRESS = "ws://localhost:8765/sync"
+
 
 chrome.identity.getProfileUserInfo(function(userInfo) {
   user_email = userInfo.email;
 });
 
 function StartWatchParty() {
-  chrome.alarms.create("ws health check", {delayInMinutes: 1, periodInMinutes: 1})
+  chrome.alarms.create("ws_health_check", {delayInMinutes: 1, periodInMinutes:1})
 
   console.log("Init sockets.");
   websocket = new WebSocket(SERVER_ADDRESS);
@@ -52,12 +52,12 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 chrome.alarms.onAlarm.addListener(checkWebSocket);
 
 function checkWebSocket(alarm) {
-  if (alarm == "ws health check") {
+  if (alarm.name == "ws_health_check") {
     try {
-      websocket.send("I am alive!");
-      console.log("I am alive!");
+      websocket.send("Websocket connection alive?");
+      console.log("Websocket connection alive!");
     } catch (err) {
-      console.log("reconnecting!");
+      console.log("reconnecting due to health check!");
       websocket = new WebSocket(SERVER_ADDRESS);
       console.log("web socket connected")
     }
@@ -71,7 +71,8 @@ function broadcast(event, senderTab) {
   try {
     websocket.send(JSON.stringify(event));
   } catch (err) {
-    console.log("reconnecting!");
+    console.log("reconnecting due to broadcast failed");
     websocket = new WebSocket(SERVER_ADDRESS);
+    console.log("web socket connected")
   }
 }
