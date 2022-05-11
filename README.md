@@ -1,2 +1,3 @@
 # chuochuo
-Yiwen and Jinyang's little playground
+
+This is chrome extension for watch videos together from different places.
