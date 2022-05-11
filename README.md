@@ -1,3 +1,3 @@
 # chuochuo
 
-This is chrome extension for watch videos together from different places.
+This is a chrome extension to watch videos together from different places.
